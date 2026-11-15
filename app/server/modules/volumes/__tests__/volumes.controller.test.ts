@@ -180,7 +180,9 @@ describe("volumes security", () => {
 				revokedAt: null,
 			});
 			// Capabilities stored before roots advertised repository support present it as disallowed.
-			expect(discovered.trustedRoots).toEqual(reportedRoots.map((root) => ({ ...root, canStoreRepository: false })));
+			expect(discovered.trustedRoots).toEqual(
+				reportedRoots.map((root) => ({ ...root, canStoreRepository: false })),
+			);
 			expect(JSON.stringify(body)).not.toContain("secret.internal");
 			expect(JSON.stringify(body)).not.toContain("/srv/");
 			expect(JSON.stringify(body)).not.toContain("Other organization");

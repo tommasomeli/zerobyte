@@ -122,7 +122,9 @@ describe("agent-owned repositories", () => {
 	test("rejects locations that are missing, do not allow repositories, or escape their root", async () => {
 		const machine = await createMachine(session.organizationId, "Picky");
 		const create = (config: RepositoryConfig) =>
-			inOrganization(() => repositoriesService.createRepository("Picky", config, undefined, undefined, machine.id));
+			inOrganization(() =>
+				repositoriesService.createRepository("Picky", config, undefined, undefined, machine.id),
+			);
 
 		await expect(create(localConfig)).rejects.toThrow("Choose a location on the machine that allows repositories.");
 		await expect(create({ ...agentConfig, trustedRootId: "unknown" })).rejects.toThrow("not advertised");
@@ -134,15 +136,15 @@ describe("agent-owned repositories", () => {
 	});
 
 	test("repositories on this server cannot name a machine location", async () => {
-		await expect(
-			inOrganization(() => repositoriesService.createRepository("Server", agentConfig)),
-		).rejects.toThrow("Repositories on this server use an absolute path, not a trusted root.");
+		await expect(inOrganization(() => repositoriesService.createRepository("Server", agentConfig))).rejects.toThrow(
+			"Repositories on this server use an absolute path, not a trusted root.",
+		);
 	});
 
 	test("does not keep the repository when the machine rejects initialization", async () => {
 		const machine = await createMachine(session.organizationId, "Strict");
 		vi.spyOn(agentManager, "runResticCommand").mockReturnValue(
-			Effect.fail(new Error("Trusted root \"disk\" does not allow repositories")) as never,
+			Effect.fail(new Error('Trusted root "disk" does not allow repositories')) as never,
 		);
 
 		await expect(
